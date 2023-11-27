@@ -16,6 +16,12 @@ cd client
 npm install
 ```
 
+Mysql is required and it must be configured in the file
+
+```
+server/config/db.config.js
+```
+
 ## Usage
 
 The system is using AWS service to upload the generated invoices, that's why it's required to set-up the required tokens in the **.env** file
