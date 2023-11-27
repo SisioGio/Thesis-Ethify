@@ -1,0 +1,74 @@
+.App {
+  text-align: center;
+}
+
+:root {
+  --custom-height: calc(100vh - 5rem);
+  --blue: #103783;
+}
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+.font-weight-bold {
+  font-weight: bold;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+table thead {
+  background-color: #103783;
+  color: white;
+}
+.badge-pill {
+  border-radius: 12px;
+  padding: 0.4rem 1rem;
+}
+.badge-success {
+  background-color: green;
+}
+.badge-danger {
+  background-color: red;
+}
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.text-sm {
+  font-size: 0.75rem;
+}
+
+.list th,
+.list td {
+  padding: 0;
+  vertical-align: middle;
+}
+
+.absolute-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

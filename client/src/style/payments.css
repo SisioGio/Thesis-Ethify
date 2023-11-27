@@ -1,0 +1,91 @@
+.table-filter th {
+  /* display: flex;
+  flex-direction: column; */
+}
+
+:root {
+  --wallet-btn-color: #d9bf40;
+}
+
+.payment {
+  color: white;
+}
+.payment-vendor {
+  background-color: #144199;
+  border: 1px solid #6262ff;
+  color: white;
+}
+.details-expand {
+  opacity: 1;
+  display: table;
+  animation: fadeIn 1s cubic-bezier(0.66, 0, 0, 1);
+}
+@-webkit-keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+.details-hidden {
+  opacity: 0;
+  display: none;
+  animation: fadeIn 1s cubic-bezier(0.66, 0, 0, 1);
+}
+.payment-vendor tbody {
+  background-color: white;
+}
+.payment-summary,
+.payment-filters {
+  background-color: var(--blue);
+}
+#metamask-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-right: 10px;
+  border-radius: 24px;
+  transition: 500ms ease;
+  color: white;
+
+  border: none;
+  box-shadow: 0 0 0 0 var(--wallet-btn-color);
+  padding: 0.5rem 1.5rem;
+}
+
+.wallet-connected {
+  background-color: var(--wallet-btn-color);
+}
+.wallet-connected {
+  background-color: green;
+}
+.pulsing {
+  -webkit-animation: pulsing 1.25s infinite cubic-bezier(0.66, 0, 0, 1);
+  -moz-animation: pulsing 1.25s infinite cubic-bezier(0.66, 0, 0, 1);
+  -ms-animation: pulsing 1.25s infinite cubic-bezier(0.66, 0, 0, 1);
+  animation: pulsing 1s infinite cubic-bezier(0.66, 0, 0, 1);
+}
+.badge-warning {
+  background-color: #ffbe09;
+}
+@-webkit-keyframes pulsing {
+  to {
+    box-shadow: 0 0 0 20px rgba(232, 76, 61, 0);
+  }
+}
+
+@-moz-keyframes pulsing {
+  to {
+    box-shadow: 0 0 0 20px rgba(232, 76, 61, 0);
+  }
+}
+
+@-ms-keyframes pulsing {
+  to {
+    box-shadow: 0 0 0 20px rgba(232, 76, 61, 0);
+  }
+}
+
+@keyframes pulsing {
+  to {
+    box-shadow: 0 0 0 20px rgba(232, 76, 61, 0);
+  }
+}

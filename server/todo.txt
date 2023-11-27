@@ -1,0 +1,3 @@
+-Aggiungere un prodotto con immagini
+-Aggiungere dimensioni
+-Aggiungere stock

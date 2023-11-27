@@ -1,0 +1,124 @@
+.accounting-table td {
+  padding: 0;
+}
+.accounting-table select {
+  padding: 0rem 0.2rem;
+}
+#loading-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: #0909cfa3;
+  z-index: 10;
+}
+
+#loading-screen div {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.react-pdf__Page {
+  width: fit-content;
+}
+.react-pdf__Document {
+  width: fit-content;
+}
+.accounting-table input,
+.accounting-table select {
+  font-size: 0.8rem;
+  width: fit-content;
+}
+
+#accounting-lines {
+  overflow-x: scroll;
+  flex-grow: 1;
+}
+
+#workflow-window {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  top: 0;
+  z-index: 1;
+  background-color: #103783;
+  overflow-x: hidden;
+  /* border: 5px blue solid;
+  border-radius: 12px; */
+}
+
+#workflow-window .accounting-table .form-control:disabled {
+  background-color: var(--bs-form-control-disabled-bg);
+  opacity: 1;
+}
+#workflow-window input,
+#workflow-window label {
+  color: white;
+}
+#workflow-window table tbody,
+#workflow-window table input,
+#workflow-window table select {
+  background-color: white;
+  color: black;
+  border: none;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #0c2d6e;
+  border-radius: 12px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #0e3178;
+}
+#workflow-window input {
+  background-color: #103783;
+  border: 1px solid #1c479d;
+}
+::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:horizontal {
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:vertical {
+  border-radius: 10px;
+}
+.workflow-header {
+  background-color: #103783;
+}
+*/ .abs-bottom {
+  position: relative;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1080;
+  background: white;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.top-right {
+  position: absolute;
+  top: 0;
+  right: 0;
+  /* transform: translate(-50%,50%); */
+  z-index: 2;
+  background: #ff5b5b;
+  padding: 0.5rem;
+  cursor: pointer;
+}

@@ -1,0 +1,106 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+.bg-white {
+  background: white;
+}
+
+.w-fit {
+  width: fit-content;
+}
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.react-pdf__Page {
+  justify-content: center;
+  display: flex;
+}
+
+#body {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+nav {
+  height: 5rem;
+}
+
+#body {
+  margin-top: 5rem;
+}
+#footer {
+  margin-top: auto;
+}
+
+.feedback-visible {
+  top: 0;
+}
+.feedback-hidden {
+  top: -100%;
+}
+
+form .close-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(-50%, 50%);
+}
+form .close-btn:hover {
+  cursor: pointer;
+}
+
+.align-right {
+  position: absolute;
+  right: 0;
+  transform: translateX(-50%);
+}
+#feedback {
+  transition: all 0.7s ease;
+  width: 100%;
+  z-index: 100;
+  position: fixed;
+  padding: rem;
+  background-color: red;
+  cursor: pointer;
+  padding: 1rem 0rem;
+  opacity: 0.85;
+  color: black;
+}
+
+#feedback p {
+  color: white;
+  font-weight: bold;
+}
+a,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+textarea,
+div {
+  font-family: "Roboto Mono", monospace;
+}

@@ -1,0 +1,47 @@
+.dimensions h5 {
+  background-color: var(--blue);
+  color: white;
+  margin-bottom: 0;
+}
+.dashboard {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+}
+.dashboard a {
+  aspect-ratio: 1;
+  background-color: rgb(1, 144, 240);
+  border-radius: 12px;
+  color: white;
+  text-decoration: none;
+  text-transform: uppercase;
+  vertical-align: middle;
+  position: relative;
+  font-weight: bold;
+  font-size: 24px;
+}
+.dashboard span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@media (min-width: 576px) {
+}
+
+@media (min-width: 768px) {
+}
+
+@media (min-width: 992px) {
+  .dashboard {
+    align-items: center;
+    width: 100%;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+}

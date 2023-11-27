@@ -1,0 +1,95 @@
+#header {
+  background: #103783;
+  position: fixed;
+  display: block;
+  width: 100%;
+  z-index: 10;
+}
+
+.site-nav {
+  list-style-type: none;
+  display: flex;
+  justify-content: space-around;
+  padding: 0;
+}
+#navbarNavDropdown {
+  z-index: 3;
+  background: var(--blue);
+  position: absolute;
+  width: 100%;
+  left: 0;
+  /* bottom: 100%; */
+  top: 100%;
+}
+
+@media (min-width: 991.98px) {
+  #navbarNavDropdown {
+    position: relative;
+    width: unset;
+    left: unset;
+
+    top: unset;
+  }
+}
+
+.dropdown-menu {
+  --bs-dropdown-bg: #082a6c;
+  --bs-dropdown-color: white;
+  --bs-dropdown-link-color: white;
+  --bs-dropdown-link-active-bg: #092650;
+  --bs-dropdown-link-hover-bg: var(--blue);
+  --bs-dropdown-link-active-color: #fff;
+}
+.site-nav li {
+  flex-grow: 1;
+}
+
+.site-nav li a,
+.site-nav select {
+  padding: 1.5rem 2rem;
+  width: auto;
+  border-radius: 0px;
+}
+.vertical-align {
+  align-items: center;
+  display: flex;
+}
+#company-selector {
+  background-color: transparent;
+  color: var(--bs-navbar-color);
+}
+#company-selector option {
+  background-color: #103783;
+  color: var(--bs-navbar-color);
+  padding: 1rem;
+}
+#company-selector option:hover {
+  background-color: red;
+  color: red;
+}
+
+.company-selector {
+  position: relative;
+}
+
+.company-selector .options {
+  position: absolute;
+  background-color: #103783;
+  width: 100%;
+  border-radius: 12px;
+}
+
+.company-selector .options div {
+  padding: 0.5rem;
+  cursor: pointer;
+  color: var(--bs-navbar-color);
+}
+
+.company-selector .options div:hover {
+  color: var(--bs-nav-link-hover-color);
+}
+
+.company-selector .link-active {
+  color: var(--bs-nav-link-hover-color) !important;
+  font-weight: bold;
+}
