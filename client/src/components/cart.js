@@ -29,6 +29,7 @@ function Cart() {
     // ];
 
     try {
+      console.log("Creating purchase order...");
       let res = await apiService.createOrder(cart);
       FeedbackDispatcher({
         type: "Success",

@@ -160,6 +160,7 @@ const saveFileToS3 = async (file) => {
   try {
     let res = await s3.upload(params).promise();
     console.log("Saved succesfully!");
+    console.log(res.Location);
     return res.Location;
   } catch (err) {
     console.log("Error while saving to S3");

@@ -86,7 +86,7 @@ function WorkflowInvoiceLine2({ line, invoice }) {
   };
 
   const removeTransaction = (i) => {
-    apiService.removeInvoiceProductLine(invoice.id, line.id, i);
+    apiService.removeInvoiceProductLine(invoice.id, line.articleCode, i);
 
     // transactions.splice(i, 1);
 
