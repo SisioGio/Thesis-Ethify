@@ -142,10 +142,7 @@ const s3 = new AWS.S3();
 
 const saveFileToS3 = async (file) => {
   let fileLocation;
-  console.log(process.env.AWS_SECRET_ACCESS_KEY);
-  // const filePath = file.path;
-  console.log("Saving image to S3");
-  // const fileContent = fs.readFileSync(filePath);
+
   const randomName = randomstring.generate({
     length: 30,
   });
