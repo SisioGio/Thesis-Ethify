@@ -15,6 +15,199 @@ const request = require("request");
 const PDFParser = require("pdf2json");
 dotenv.config();
 
+// Create and Save a new invoice
+exports.create = async (req, res) => {
+  // Save invoice in the database
+  try {
+    let invoices = [];
+    const result = await sequelize.transaction(async (t) => {
+      // Input is a list of orders
+      const body = req.body.orders;
+
+      // Group orders by customerId
+      var result = body.reduce((x, y) => {
+        (x[y.customerId] = x[y.customerId] || []).push(y);
+        return x;
+      }, {});
+
+      // For each customer
+      for (const [key, value] of Object.entries(result)) {
+        // Set document path
+        let customer = value[0].customer;
+        let vendor = value[0].vendor;
+        var path = `./invoices/Invoice ${customer.name}.pdf`;
+
+        let orders = [...new Set(value.map((order) => order.id))];
+        // Get customer object from database
+        let customerObj = await db.customer.findOne({
+          where: { vendorId: vendor.id, referenceCustomerCompanyId: key },
+          include: db.paymentTerm,
+        });
+
+        let invoice = await db.invoice.create({
+          paid: false,
+          dueDate: "2023-04-05",
+          documentDate: "2023-04-05",
+          totalAmount: 0,
+          taxAmount: 0,
+          netAmount: 0,
+          customerId: customer.id,
+          vendorId: vendor.id,
+          url: "",
+          status: "New",
+        });
+        let invoiceDetails = await generateInvoiceData(
+          value,
+          customerObj,
+          invoice,
+          t
+        );
+
+        invoice.netAmount = invoiceDetails.netAmount;
+        invoice.taxAmount = invoiceDetails.vatAmount;
+        invoice.totalAmount = invoiceDetails.totalAmount;
+        invoice.dueDate = invoiceDetails.invoiceDueDate;
+        invoice.documentDate = invoiceDetails.invoiceDate;
+
+        await invoice.save({ transaction: t });
+
+        for (let i = 0; i < orders.length; i++) {
+          var orderObj = await db.order.findByPk(orders[i]);
+          orderObj.invoiceId = invoice.id;
+          orderObj.status = "Invoiced";
+          await orderObj.save({ transaction: t });
+        }
+
+        let customerCompany = await customerObj.getReferenceCustomerCompany();
+        let customerAddress = await customerCompany.getAddress();
+
+        let squinvoiceInvoiceUrl = await sendDataToSquinvoice({
+          vendorName: vendor.name,
+          vendorIdentificator: vendor.vatNo,
+          type: "INVOICE",
+          documentNo: invoice.id,
+          documentDate: invoice.documentDate,
+          netAmount: invoice.netAmount,
+          taxAmount: invoice.taxAmount,
+          totalAmount: invoice.totalAmount,
+          freightCharge: 0,
+          priceRounding: 0,
+          purchaseOrder: "",
+          deliveryNote: "",
+          shippingAddress: {
+            country: customerAddress.country,
+            city: customerAddress.city,
+            street: customerAddress.street,
+            streetNo: customerAddress.streetNo,
+            postcode: customerAddress.postcode,
+          },
+          vendorAddress: {
+            country: vendor.address.country,
+            city: vendor.address.city,
+            street: vendor.address.street,
+            streetNo: vendor.address.streetNo,
+            postcode: vendor.address.postcode,
+          },
+
+          lineItems: invoiceDetails.items,
+          taxLines: invoiceDetails.taxCodes,
+        });
+        invoice.squinvoiceUrl = squinvoiceInvoiceUrl;
+
+        // Create document vendor header
+        let doc = new PDFDocument({ margin: 50 });
+
+        InvoiceVendorHeader(doc, vendor);
+
+        InvoiceCustomerHeader(doc, customer);
+
+        InvoiceDataHeader(doc, key, invoiceDetails);
+
+        generateHr(doc, 220);
+
+        InvoiceLineItemHeader(doc);
+        // Invoice line items
+        let i;
+        let j;
+
+        doc.font("Helvetica");
+        // return res.send(invoiceDetails);
+        var position = 250;
+
+        position = InvoiceLineItems(doc, invoiceDetails.items, position);
+
+        // Net Amount
+        doc.font("Helvetica-Bold");
+        position = position + 50;
+        InvoiceLineItem(doc, position, [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "Total Net",
+          "€ " + parseFloat(invoiceDetails.netAmount).toFixed(2),
+        ]);
+
+        invoiceDetails.taxCodes.forEach((taxCode) => {
+          position = position + 30;
+          doc.font("Helvetica");
+          InvoiceLineItem(doc, position, [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "VAT [" + taxCode.code + "]",
+            "€ " + parseFloat(taxCode.amount).toFixed(2),
+          ]);
+        });
+        doc.font("Helvetica-Bold");
+        position = position + 30;
+        InvoiceLineItem(doc, position, [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "Total Vat",
+          "€ " + parseFloat(invoiceDetails.vatAmount).toFixed(2),
+        ]);
+
+        position = position + 30;
+        doc.font("Helvetica-Bold");
+        InvoiceLineItem(doc, position, [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "Total",
+          "€ " + parseFloat(invoiceDetails.totalAmount).toFixed(2),
+        ]);
+        generateFooter(doc, squinvoiceInvoiceUrl);
+        doc.end();
+        doc.pipe(fs.createWriteStream(path));
+
+        let invoiceUrl = await saveFileToS3(doc);
+        invoice.url = invoiceUrl;
+        await invoice.save({ transaction: t });
+      }
+      return res.send(await result);
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({
+      message: err.message || "Some error occurred while creating the invoice.",
+    });
+  }
+};
+
+
 async function sendRequestToSquinvoice(squinvoiceUrl) {
   let response;
   try {
@@ -104,12 +297,13 @@ exports.getSquinvoiceData = async (req, res) => {
     // Get query parameters
     const invoiceUrl = req.query.invoiceUrl;
     const invoiceId = req.query.invoiceId;
+
     // Validate incoming request
     if (!invoiceUrl) {
-      return res.status(400).send({ message: "Missing paramter 'invoiceUrl'" });
+      return res.status(400).send({ message: "Missing parameter 'invoiceUrl'" });
     }
     if (!invoiceId) {
-      return res.status(400).send({ message: "Missing paramter 'invoiceId'" });
+      return res.status(400).send({ message: "Missing parameter 'invoiceId'" });
     }
 
     // Make a GET request using the Squinvoice link (invoiceUrl)
@@ -156,8 +350,8 @@ const saveFileToS3 = async (file) => {
 
   try {
     let res = await s3.upload(params).promise();
-    console.log("Saved succesfully!");
-    console.log(res.Location);
+   
+ 
     return res.Location;
   } catch (err) {
     console.log("Error while saving to S3");
@@ -287,7 +481,7 @@ const generateInvoiceData = async (orders, customer, invoice, t) => {
     var orderId = orders[i].id;
     for (j = 0; j < orders[i].orderProducts.length; j++) {
       var item = orders[i].orderProducts[j];
-      console.log("Customer group id " + customer.customerGroupId);
+      
       var taxValueIndex = item.product.taxCode.taxValues.findIndex(
         (taxValue) => taxValue.customerGroupId == customer.customerGroupId
       );
@@ -405,199 +599,7 @@ const sendDataToSquinvoice = async (data) => {
   }
 };
 
-// Create and Save a new invoice
-exports.create = async (req, res) => {
-  // Save invoice in the database
-  try {
-    let invoices = [];
-    const result = await sequelize.transaction(async (t) => {
-      // Input is a list of orders
-      const body = req.body.orders;
 
-      // Group orders by customerId
-      var result = body.reduce((x, y) => {
-        (x[y.customerId] = x[y.customerId] || []).push(y);
-        return x;
-      }, {});
-
-      // For each customer
-      for (const [key, value] of Object.entries(result)) {
-        // Set document path
-        let customer = value[0].customer;
-        let vendor = value[0].vendor;
-        var path = `/home/alessio/Documents/Projects/Thesis/server/invoices/Invoice ${customer.name}.pdf`;
-
-        let orders = [...new Set(value.map((order) => order.id))];
-        // Get customer object from database
-        let customerObj = await db.customer.findOne({
-          where: { vendorId: vendor.id, referenceCustomerCompanyId: key },
-          include: db.paymentTerm,
-        });
-
-        let invoice = await db.invoice.create({
-          paid: false,
-          dueDate: "2023-04-05",
-          documentDate: "2023-04-05",
-          totalAmount: 0,
-          taxAmount: 0,
-          netAmount: 0,
-          customerId: customer.id,
-          vendorId: vendor.id,
-          url: "",
-          status: "New",
-        });
-        let invoiceDetails = await generateInvoiceData(
-          value,
-          customerObj,
-          invoice,
-          t
-        );
-
-        invoice.netAmount = invoiceDetails.netAmount;
-        invoice.taxAmount = invoiceDetails.vatAmount;
-        invoice.totalAmount = invoiceDetails.totalAmount;
-        invoice.dueDate = invoiceDetails.invoiceDueDate;
-        invoice.documentDate = invoiceDetails.invoiceDate;
-
-        await invoice.save({ transaction: t });
-
-        for (let i = 0; i < orders.length; i++) {
-          var orderObj = await db.order.findByPk(orders[i]);
-          orderObj.invoiceId = invoice.id;
-          orderObj.status = "Invoiced";
-          await orderObj.save({ transaction: t });
-        }
-
-        let customerCompany = await customerObj.getReferenceCustomerCompany();
-        let customerAddress = await customerCompany.getAddress();
-
-        let squinvoiceInvoiceUrl = await sendDataToSquinvoice({
-          vendorName: vendor.name,
-          vendorIdentificator: vendor.vatNo,
-          type: "INVOICE",
-          documentNo: invoice.id,
-          documentDate: invoice.documentDate,
-          netAmount: invoice.netAmount,
-          taxAmount: invoice.taxAmount,
-          totalAmount: invoice.totalAmount,
-          freightCharge: 0,
-          priceRounding: 0,
-          purchaseOrder: "",
-          deliveryNote: "",
-          shippingAddress: {
-            country: customerAddress.country,
-            city: customerAddress.city,
-            street: customerAddress.street,
-            streetNo: customerAddress.streetNo,
-            postcode: customerAddress.postcode,
-          },
-          vendorAddress: {
-            country: vendor.address.country,
-            city: vendor.address.city,
-            street: vendor.address.street,
-            streetNo: vendor.address.streetNo,
-            postcode: vendor.address.postcode,
-          },
-
-          lineItems: invoiceDetails.items,
-          taxLines: invoiceDetails.taxCodes,
-        });
-        invoice.squinvoiceUrl = squinvoiceInvoiceUrl;
-
-        console.log(squinvoiceInvoiceUrl);
-        // Create document vendor header
-        let doc = new PDFDocument({ margin: 50 });
-
-        InvoiceVendorHeader(doc, vendor);
-
-        InvoiceCustomerHeader(doc, customer);
-
-        InvoiceDataHeader(doc, key, invoiceDetails);
-
-        generateHr(doc, 220);
-
-        InvoiceLineItemHeader(doc);
-        // Invoice line items
-        let i;
-        let j;
-
-        doc.font("Helvetica");
-        // return res.send(invoiceDetails);
-        var position = 250;
-
-        position = InvoiceLineItems(doc, invoiceDetails.items, position);
-
-        console.log(position);
-        // Net Amount
-        doc.font("Helvetica-Bold");
-        position = position + 50;
-        InvoiceLineItem(doc, position, [
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "Total Net",
-          "€ " + parseFloat(invoiceDetails.netAmount).toFixed(2),
-        ]);
-
-        invoiceDetails.taxCodes.forEach((taxCode) => {
-          position = position + 30;
-          doc.font("Helvetica");
-          InvoiceLineItem(doc, position, [
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "VAT [" + taxCode.code + "]",
-            "€ " + parseFloat(taxCode.amount).toFixed(2),
-          ]);
-        });
-        doc.font("Helvetica-Bold");
-        position = position + 30;
-        InvoiceLineItem(doc, position, [
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "Total Vat",
-          "€ " + parseFloat(invoiceDetails.vatAmount).toFixed(2),
-        ]);
-
-        position = position + 30;
-        doc.font("Helvetica-Bold");
-        InvoiceLineItem(doc, position, [
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "Total",
-          "€ " + parseFloat(invoiceDetails.totalAmount).toFixed(2),
-        ]);
-        generateFooter(doc, squinvoiceInvoiceUrl);
-        doc.end();
-        doc.pipe(fs.createWriteStream(path));
-
-        let invoiceUrl = await saveFileToS3(doc);
-        invoice.url = invoiceUrl;
-        await invoice.save({ transaction: t });
-      }
-      return res.send(await result);
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500).send({
-      message: err.message || "Some error occurred while creating the invoice.",
-    });
-  }
-};
 
 exports.findAll = (req, res) => {
   // Validate request

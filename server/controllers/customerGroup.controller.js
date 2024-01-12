@@ -37,7 +37,7 @@ exports.create = async (req, res) => {
         });
       }
 
-      return res.send();
+      return res.send(customerGroupObj);
     });
   } catch (err) {
     console.log(err);

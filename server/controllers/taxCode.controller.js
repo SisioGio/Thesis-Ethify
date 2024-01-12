@@ -36,7 +36,7 @@ exports.create = async (req, res) => {
           transaction: t,
         });
       }
-      return res.send();
+      return res.send(taxCodeObj);
     });
   } catch (err) {
     console.log(err);

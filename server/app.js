@@ -422,81 +422,81 @@ db.sequelize
     //   },
     // });
 
-    // var [acc1, createdAt] = await db.account.findOrCreate({
-    //   where: {
-    //     code: "10002000",
-    //     name: "Purchase of goods",
-    //     isNode: false,
-    //     type: "Asset",
-    //     balance: 0.0,
-    //     companyId: company1.id,
-    //   },
-    // });
-    // var [acc2, createdAt] = await db.account.findOrCreate({
-    //   where: {
-    //     code: "10003000",
-    //     name: "Purchase of goods for productions",
-    //     isNode: false,
-    //     type: "Asset",
-    //     balance: 0.0,
-    //     companyId: company1.id,
-    //   },
-    // });
-    // var [acc3, createdAt] = await db.account.findOrCreate({
-    //   where: {
-    //     code: "10004000",
-    //     name: "Purchase of machines",
-    //     isNode: false,
-    //     type: "Asset",
-    //     balance: 0.0,
-    //     companyId: company1.id,
-    //   },
-    // });
+    var [acc1, createdAt] = await db.account.findOrCreate({
+      where: {
+        code: "10002000",
+        name: "Purchase of goods",
+        isNode: false,
+        type: "Asset",
+        balance: 0.0,
+        companyId: company1.id,
+      },
+    });
+    var [acc2, createdAt] = await db.account.findOrCreate({
+      where: {
+        code: "10003000",
+        name: "Purchase of goods for productions",
+        isNode: false,
+        type: "Asset",
+        balance: 0.0,
+        companyId: company1.id,
+      },
+    });
+    var [acc3, createdAt] = await db.account.findOrCreate({
+      where: {
+        code: "10004000",
+        name: "Purchase of machines",
+        isNode: false,
+        type: "Asset",
+        balance: 0.0,
+        companyId: company1.id,
+      },
+    });
 
-    // var [cc1, createdAt] = await db.costCenter.findOrCreate({
-    //   where: {
-    //     code: "100190",
-    //     name: "Tools",
-    //     companyId: company1.id,
-    //   },
-    // });
-    // var [cc2, createdAt] = await db.costCenter.findOrCreate({
-    //   where: {
-    //     code: "100200",
-    //     name: "Components",
-    //     companyId: company1.id,
-    //   },
-    // });
+    var [cc1, createdAt] = await db.costCenter.findOrCreate({
+      where: {
+        code: "100190",
+        name: "Tools",
+        companyId: company1.id,
+      },
+    });
+    var [cc2, createdAt] = await db.costCenter.findOrCreate({
+      where: {
+        code: "100200",
+        name: "Components",
+        companyId: company1.id,
+      },
+    });
 
-    // var [bl1, createdAt] = await db.businessLine.findOrCreate({
-    //   where: {
-    //     code: "BL18",
-    //     name: "BL18",
-    //     companyId: company1.id,
-    //   },
-    // });
-    // var [bl2, createdAt] = await db.businessLine.findOrCreate({
-    //   where: {
-    //     code: "BL20",
-    //     name: "BL20",
-    //     companyId: company1.id,
-    //   },
-    // });
+    var [bl1, createdAt] = await db.businessLine.findOrCreate({
+      where: {
+        code: "BL18",
+        name: "BL18",
+        companyId: company1.id,
+      },
+    });
+    var [bl2, createdAt] = await db.businessLine.findOrCreate({
+      where: {
+        code: "BL20",
+        name: "BL20",
+        companyId: company1.id,
+      },
+    });
 
-    // var [factory1, createdAt] = await db.factory.findOrCreate({
-    //   where: {
-    //     code: "LMN",
-    //     name: "Limena",
-    //     companyId: company1.id,
-    //   },
-    // });
-    // var [factory2, createdAt] = await db.factory.findOrCreate({
-    //   where: {
-    //     code: "BGT",
-    //     name: "Brugherio",
-    //     companyId: company1.id,
-    //   },
-    // });
+    var [factory1, createdAt] = await db.factory.findOrCreate({
+      where: {
+        code: "LMN",
+        name: "Limena",
+        companyId: company1.id,
+      },
+    });
+    var [factory2, createdAt] = await db.factory.findOrCreate({
+      where: {
+        code: "BGT",
+        name: "Brugherio",
+        companyId: company1.id,
+      },
+    });
 
     // var [taxCode2, createdAt] = await db.taxCode.findOrCreate({
     //   where: {

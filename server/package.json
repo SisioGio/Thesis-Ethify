@@ -2,7 +2,7 @@
   "name": "tin-task-10",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "server/app.js",
   "scripts": {
     "start": "cross-env NODE_ENV=prod nodemon app.js",
     "test": "node runTest.js"
@@ -20,6 +20,7 @@
     "dotenv": "^16.0.3",
     "glob": "^10.3.10",
     "jsonwebtoken": "^9.0.0",
+    "mariadb": "^3.2.3",
     "mocha": "^10.2.0",
     "multiparty": "^4.2.3",
     "mysql2": "^2.3.3",
