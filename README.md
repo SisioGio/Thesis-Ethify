@@ -31,6 +31,10 @@ TOKEN_KEY = "RANDOM STRING FOR JWT TOKENS";
 AWS_ACCESS_KEY = "AWS_ACCESS_TOKEN";
 AWS_SECRET_ACCESS_KEY = "AWS_SECRET_ACCESS_KEY";
 AWS_BUCKET_NAME = "AWS_BUCKET_NAME";
+DB_PORT = "DB_PORT";
+DB_USER = "DB:USER";
+DB_PASSWORD = "DB_PASSWORD";
+DB_HOST = "DB_HOST";
 ```
 
 After updating the **.env** file, server and client can be activated as described below:
